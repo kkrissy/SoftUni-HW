@@ -1,0 +1,10 @@
+Problem 1.  - Device File for SD Cards
+What is the name of the device file for SD cards? 
+
+Answer:
+ -  By running df -h in your Konsole you can see what devices and currently mounted on your computer.f your computer has a slot for SD cards, insert the card.
+    If not, insert the card into an SD card reader, then connect the reader to your computer.
+ -  Run df -h again. The new device that has appeared is your SD card. The left column gives the device name of your SD card; it will be listed as something like /dev/mmcblk0p1 or /dev/sdd1.
+    The last part (p1 or 1 respectively) is the partition number but you want to write to the whole SD card, not just one partition. 
+    Therefore you need to remove that part from the name (getting, for example, /dev/mmcblk0 or /dev/sdd) as the device for the whole SD card.
+ -  Now that you've noted what the device name is, you need to unmount it so that files can't be read or written to the SD card while you are copying over the SD image. 

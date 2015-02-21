@@ -1,0 +1,51 @@
+Problem 2. - Linux File Systems That Work With Memory
+-   List at least 3 Linux file systems, specifically developed to work with memory (SD cards, USB drives, SSD disks). 
+
+Answer:
+
+ 1) The ext4 or fourth extended filesystem
+ -  Ext4 was released as a functionally complete and stable filesystem in Linux 2.6.28, and it's getting included in all the modern distros 
+    (in some cases as the default fs), so if you are using a modern distro, it's possible that you already have Ext4 support and you don't need
+    to modify your system to run Ext4.ext4 was born as a series of backward compatible extensions to ext3, many of them originally developed by Cluster File Systems 
+    for the Lustre file system between 2003 and 2006, meant to extend storage limits and add other performance improvements.
+ 
+ -  Bigger File System and File Sizes
+    Currently, Ext3 support 16 TiB of maximum file system size and 2 TiB of maximum file size. 
+    Ext4 adds 48-bit block addressing, so it will have 1 EiB1 of maximum file system size and 16 TiB of maximum file size. 
+    Why 48-bit and not 64-bit? There are some limitations that would need to be fixed before making Ext4 fully 64-bit capable,
+    which have not been addressed in Ext4. The Ext4 data structures have been designed keeping this in mind, so a future update to Ext4 may implement 
+    full 64-bit support at some point. 1 EiB will be enough (really :)) until that happens.
+ 
+
+ 2) F2FS(Flash-Friendly File System) file system:
+ -  F2FS is a flash file system initially developed by Samsung Electronics for the Linux operating system kernel.
+    The motive for F2FS was to build a file system that from the start, takes into account the characteristics of NAND flash memory-based storage devices
+    (such as solid-state disks, eMMC, and SD cards), which are widely used in computer systems ranging from mobile devices to servers.
+    Included in Linux since 3.8 and was specifically designed for SSD drives characteristics.
+    
+ Implemented:
+   Multi-head logging
+   Multi-level hash table for directory entries
+   Static/Dynamic hot and cold data separation
+   Adaptive logging scheme
+   Configurable operational units
+   Dual checkpoint
+   Roll-back and roll-forward recovery
+   Heap-style block allocation
+   TRIM/FITRIM support 
+   Online defragmentation
+   Inline xattrs/data 
+   Offline filesystem check 
+   Atomic operations
+   
+ 3) The Journaling Flash File System (or JFFS)
+ -  is a log-structured file system for use on NOR flash memory devices on the Linux operating system. It has been superseded by JFFS2.
+ Design:
+   -  Flash memory (specifically NOR flash) must be erased prior to writing. The erase process has several limitations:
+      Erasing is very slow (typically 1-100 ms per erase block, which is 103-105 times slower than reading data from the same region)
+      It is only possible to erase flash in large segments (usually 64 KiB or more), whereas it can be read or written in smaller blocks (often 512 bytes)
+      Flash memory can only be erased a limited number of times (typically 103-106) before it becomes worn out
+      These constraints combine to produce a profound asymmetry between patterns of read and write access to flash memory.
+      In contrast, magnetic hard disk drives offer nearly symmetrical read and write access: read speed and write speed are nearly identical 
+      (as both are constrained by the rate at which the disk spins), it is possible to both read and write small blocks or sectors (typically 512 or 4096 bytes), 
+      and there is no practical limit to the number of times magnetic media can be written and rewritten.

@@ -1,0 +1,5 @@
+1. cd C:\console compilation                              
+2. set path=%path%;C:\Program Files (x86)\Java\jdk1.8.0_20  
+3. javac _03_SumTwoNumbers.java                            
+4. java _03_SumTwoNumbers                                  
+

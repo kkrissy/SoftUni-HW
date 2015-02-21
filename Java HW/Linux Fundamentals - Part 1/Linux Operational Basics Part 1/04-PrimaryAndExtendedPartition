@@ -1,0 +1,138 @@
+Problem 4 : Primary + Extended Partition
+ - Describe the process of creating a new MBR 1 Primary partition + 1 Extended Partition of type Linux. 
+
+ 
+   Answer :
+   
+  1) -  Creating a new MBR Primary partition:
+   
+   Using the Windows interface
+1.
+Open Computer Management (Local) 
+2.
+In the console tree, click Disk Management.
+Where?
+Computer Management (Local) > Storage > Disk Management
+3.
+Right-click an unallocated region of a basic disk, and then click New Partition, or right-click free space in an extended partition, and then click New Logical Drive.
+4.
+In the New Partition wizard, click Next, click Primary partition, Extended partition, or Logical drive, and then follow the instructions on your screen.
+Note
+•	
+To open Computer Management, click Start, and then click Control Panel. Click Performance and Maintenance, click Administrative Tools, and then double-click Computer Management. 
+•	
+You must be logged on as an administrator or a member of the Administrators group in order to complete this procedure. If your computer is connected to a network, network policy settings may also prevent you from completing this procedure. 
+•	
+You can create primary partitions, extended partitions, and logical drives only on basic disks You should create basic volumes instead of dynamic volumes if this computer also runs MS-DOS, Windows 95, Windows 98, Windows Me, Windows NT 4.0, or Windows XP Home Edition.
+•	
+On a master boot record (MBR) disk, you can create up to four primary partitions, or three primary partitions and one extended partition.
+•	
+On a GUID partition table (GPT) disk, you can create up to 128 primary partitions.
+Using a command line
+1.
+Open Command Prompt
+2.
+Type:
+diskpart
+3.
+At the DISKPART prompt, type:
+list disk
+Make note of the disk number of the disk on which you want to create a primary or extended partition.
+4.
+At the DISKPART prompt, type:
+select disk n
+Select the disk n where you want to create the primary or extended partition.
+5.
+At the DISKPART prompt, type one of the following:
+create partition primary [size=n] [offset=n] [ID=byte | GUID] [noerr]
+or
+create partition extended [size=n] [offset=n] [noerr]
+or
+create partition logical [size=n] [offset=n] [noerr]
+
+
+
+    2) - Creating a Extended partition of type Linux
+    fdisk usage
+
+fdisk is started by typing (as root) fdisk device at the command prompt. device might be something like /dev/hda or /dev/sda (see Section 2.1.1). The basic fdisk commands you need are:
+
+p print the partition table
+
+n create a new partition
+
+d delete a partition
+
+q quit without saving changes
+
+w write the new partition table and exit
+
+Changes you make to the partition table do not take effect until you issue the write (w) command. Here is a sample partition table:
+Disk /dev/hdb: 64 heads, 63 sectors, 621 cylinders
+Units = cylinders of 4032 * 512 bytes
+ 
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hdb1   *         1       184    370912+  83  Linux
+/dev/hdb2           185       368    370944   83  Linux
+/dev/hdb3           369       552    370944   83  Linux
+/dev/hdb4           553       621    139104   82  Linux swap
+The first line shows the geometry of your hard drive. It may not be physically accurate, but you can accept it as though it were. The hard drive in this example is made of 32 double-sided platters with one head on each side (probably not true). Each platter has 621 concentric tracks. A 3-dimensional track (the same track on all disks) is called a cylinder. Each track is divided into 63 sectors. Each sector contains 512 bytes of data. Therefore the block size in the partition table is 64 heads * 63 sectors * 512 bytes er...divided by 1024. (See 4 for discussion on problems with this calculation.) The start and end values are cylinders.
+
+5.2. Four primary partitions
+
+The overview:
+
+	Decide on the size of your swap space (see Section 4.4) and where it ought to go (see Section 4.4.3). Divide up the remaining space for the three other partitions.
+
+Example:
+
+I start fdisk from the shell prompt:
+# fdisk /dev/hdb 
+which indicates that I am using the second drive on my IDE controller. (See Section 2.1.) When I print the (empty) partition table, I just get configuration information.
+Command (m for help): p
+
+Disk /dev/hdb: 64 heads, 63 sectors, 621 cylinders
+Units = cylinders of 4032 * 512 bytes
+I knew that I had a 1.2Gb drive, but now I really know: 64 * 63 * 512 * 621 = 1281982464 bytes. I decide to reserve 128Mb of that space for swap, leaving 1153982464. If I use one of my primary partitions for swap, that means I have three left for ext2 partitions. Divided equally, that makes for 384Mb per partition. Now I get to work.
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 1
+First cylinder (1-621, default 1):<RETURN>
+Using default value 1
+Last cylinder or +size or +sizeM or +sizeK (1-621, default 621): +384M
+Next, I set up the partition I want to use for swap:
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4): 2
+First cylinder (197-621, default 197):<RETURN>
+Using default value 197
+Last cylinder or +size or +sizeM or +sizeK (197-621, default 621): +128M
+Now the partition table looks like this:
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hdb1             1       196    395104   83  Linux
+/dev/hdb2           197       262    133056   83  Linux
+I set up the remaining two partitions the same way I did the first. Finally, I make the first partition bootable:
+Command (m for help): a
+Partition number (1-4): 1
+And I make the second partition of type swap:
+Command (m for help): t
+Partition number (1-4): 2
+Hex code (type L to list codes): 82
+Changed system type of partition 2 to 82 (Linux swap)      
+Command (m for help): p
+The end result:
+Disk /dev/hdb: 64 heads, 63 sectors, 621 cylinders
+Units = cylinders of 4032 * 512 bytes
+ 
+   Device Boot    Start       End    Blocks   Id  System
+/dev/hdb1   *         1       196    395104+  83  Linux
+/dev/hdb2           197       262    133056   82  Linux swap
+/dev/hdb3           263       458    395136   83  Linux
+/dev/hdb4           459       621    328608   83  Linux          
+Finally, I issue the write command (w) to write the table on the disk.

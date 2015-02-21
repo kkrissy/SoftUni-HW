@@ -1,0 +1,24 @@
+Problem 3 : Command for Mounting Windows
+-   What is the command for mounting Windows file system, so that all files belong to a single user? 
+
+  Answer:
+  
+  -  Linux uses a different convention than Windows for describing disk partitions. A typical example of a Linux partition would be:
+
+     -   /dev/sda2
+     This indicates that you installed windows on your SCSI disk on the second partition.
+
+     An IDE hard drive would look something like:
+
+     -  /dev/hda2
+     If you have more than one hard disk in your computer, the convention will be different. 
+     For example, for the first partition on the second SCSI hard disk would take the form:
+
+     -   /dev/sdb1
+     Hopefully by now, you've determined where you installed your Windows file system.
+
+     Next, assuming an NTFS file system, try mounting the partition by typing something like:
+
+      -   mount -t ntfs /dev/sda1 /mnt     (Of course replacing the /dev/sda1 with your partition specifics.)
+     This command should complete without error. If you get an error, you may either not have the file system driver installed correctly 
+     or the partition you specified may be incorrect.
